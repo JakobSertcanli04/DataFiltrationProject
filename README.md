@@ -57,7 +57,7 @@ It includes features for:
 
 
         Your input .csv must have at least the following column headers:
-        <img width="337" alt="image" src="https://github.com/user-attachments/assets/7a609c78-c8a3-418f-8a95-40eeaef91e11" />
+    <img width="337" alt="Screenshot 2025-07-07 135124" src="https://github.com/user-attachments/assets/a4775110-917a-45ad-8ef5-a9b9169b50f8" />
 
         The Gemini classifier assumes an internet or LLM backend—ensure this is configured.
         The Scopus fetching feature requires API access or internal tools for data scraping (please follow Scopus T&Cs).
