@@ -1,121 +1,66 @@
-🧠 Article Labeling and Classification Tool
-This is a Python-based GUI application designed to:
+# Article Labeling Tool with Scopus Integration and Gemini Classifier 
 
-Fetch scientific articles from Scopus using ISSN and a date range.
+## Project Overview
+This project is a Tkinter-based GUI application that helps researchers and data analysts to automatically label scientific articles using pretrained machine learning models to retrieve articles from Scopus based on ISSN and year range.
 
-Automatically label articles based on their abstracts using a fine-tuned SetFit model.
+It includes features for:
+- Auto-labeling articles based on their abstract content.
+- Gemini-based topic classification.
+- Article fetching from Scopus using ISSN and year range.
+- Word cloud visualization of the abstract data.
+- An interactive line chart showing category trends over time.
 
-Optionally run Gemini-based classification for more detailed topic insights.
+  
+## How It Works
+- Load an Article CSV: Provide a .csv file with article data.
 
-Export labeled results to a CSV file.
+- Label the Articles: Use SetFitModel to assign category labels.
 
-🖥️ Features
-Tkinter GUI: Simple and intuitive interface for non-technical users.
+- (Optional) Run Gemini: Further classify using Gemini AI for fine-grained categorization.
 
-Automated Labeling: Uses SetFit (Sentence Transformer + Classifier) for zero-shot or few-shot classification.
+- Visualize: Generate word clouds from abstracts.
 
-Sub-Label Assignment: Adds secondary labels using custom assignSubLabels.
-
-Gemini Integration: Optionally classify with Gemini for advanced categorization.
-
-Scopus Integration: Retrieve articles by ISSN and year range.
-
-CSV I/O: Read and write article data in CSV format.
+- Fetch Articles from Scopus: Input ISSN and date range to auto-fetch data and save as CSV.       
 
 
-✅ Requirements
-Python 3.8+
 
-Tkinter (comes with Python)
+## 1. Clone the Repository
 
-setfit
+        git clone https://github.com/JakobSertcanli04/DataFiltrationProject
+        cd DataFiltrationProject
 
-sentence-transformers
+## 2. Create a Virtual Environment
+        
+        python -m venv venv
+        source venv/bin/activate   # On Windows: venv\Scripts\activate
 
-pandas
+## 3. Install Dependencies
+        pip install -r requirements.txt
 
-scikit-learn
 
-Custom modules (labelUtilities, scopus_data, etc.)
+## 4. Download Tensorflow 
+        pip install tensorflow
 
-Gemini API key if using gemini.py
 
-📦 Installation
-bash
-Copy
-Edit
-pip install setfit pandas scikit-learn sentence-transformers
-Ensure the following directories and files are correctly structured and available:
+## 5. Download the SetFit Model
 
-Pretrained SetFit model at:
-C:/Users/USERNAME/Project_setfit/src/mpnet-base-v2
+        Ensure you have the SetFitModel locally or download from HuggingFace if internet access is available. Update the model path in:
+        model = SetFitModel.from_pretrained("path_to_your_local_model")
 
-CSV files with appropriate schema (Title, Abstract, etc.)
+## Running the App
 
-Your gemini.py must be configured with valid access if using Gemini classification.
+   python main.py
 
-🚀 Usage
-1. Run the Application
-bash
-Copy
-Edit
-python main.py
-2. Label Existing Articles
-Click Browse to select a CSV file of articles.
 
-Check "Run Gemini" to enable Gemini classification (optional).
 
-Click "Start Labeling".
+## 📣 Notes
 
-3. Fetch New Articles from Scopus
-Enter:
 
-ISSN
+        Your input .csv must have at least the following column headers:
+        <img width="337" alt="image" src="https://github.com/user-attachments/assets/7a609c78-c8a3-418f-8a95-40eeaef91e11" />
 
-Start Year
+        The Gemini classifier assumes an internet or LLM backend—ensure this is configured.
+        The Scopus fetching feature requires API access or internal tools for data scraping (please follow Scopus T&Cs).
+        Make sure the model path is valid and the directory structure supports it.
 
-End Year
-
-Output filename (CSV)
-
-Click "Fetch Articles".
-
-Labeled results will be written to the specified file, and categories will be counted and saved.
-
-📋 Output Format
-The output CSV will include additional columns:
-
-Label: Primary category (e.g., Semiconductors, Waste)
-
-SubLabel: Secondary topic if assigned (via assignSubLabels)
-
-Possibly Gemini-based topics if used.
-
-A separate file (from CategoryHandler.writeCategory) summarizes label counts.
-
-🔧 Customization
-Edit candidate_labels in labelArticles() if you want different categories.
-
-Modify SetFit model path to use your own pretrained model.
-
-Sub-label logic can be extended in setfit_subcategory.py.
-
-🛠️ Troubleshooting
-Model Not Found?
-Make sure mpnet-base-v2 directory exists and contains the proper model files.
-
-No output or error?
-Check log window for error messages.
-
-Gemini errors?
-Ensure API key and internet access are valid.
-
-🧑‍💻 Contributors
-Initial Author: [Your Name]
-
-Dependencies: HuggingFace SetFit, Scikit-learn, Gemini API, Elsevier Scopus API (assumed)
-
-📄 License
-MIT License or appropriate license based on dependencies and usage.
-
-Let me know if you want to generate a sample requirements.txt or setup.py file to package this!
+        You can get your api key over here: https://dev.elsevier.com/apikey/manage
