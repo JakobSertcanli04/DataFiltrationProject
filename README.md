@@ -23,6 +23,7 @@ It includes features for:
 - Fetch Articles from Scopus: Input ISSN and date range to auto-fetch data and save as CSV.       
 
 
+# Installation 
 
 ## 1. Clone the Repository
 
@@ -47,6 +48,12 @@ It includes features for:
         Ensure you have the SetFitModel locally or download from HuggingFace if internet access is available. Update the model path in:
         model = SetFitModel.from_pretrained("path_to_your_local_model")
 
+
+## 6. Get your api key
+        You can get your api key over here: https://dev.elsevier.com/apikey/manage
+        Insert the api key into the apiKey field inside the ScopusData class which lays inside the scopus_data.py file
+
+        
 ## Running the App
 
    python main.py
@@ -57,10 +64,10 @@ It includes features for:
 
 
         Your input .csv must have at least the following column headers:
-        <img width="337" alt="Screenshot 2025-07-07 135124" src="https://github.com/user-attachments/assets/a4775110-917a-45ad-8ef5-a9b9169b50f8" />
-
+        DOI	Title	Abstract	Date	Link	CitationCount	Label
+   
         The Gemini classifier assumes an internet or LLM backend—ensure this is configured.
         The Scopus fetching feature requires API access or internal tools for data scraping (please follow Scopus T&Cs).
         Make sure the model path is valid and the directory structure supports it.
 
-        You can get your api key over here: https://dev.elsevier.com/apikey/manage
+       
