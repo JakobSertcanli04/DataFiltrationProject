@@ -48,8 +48,6 @@ def labelArticles(input_csv_path, log_callback=None):
         if log_callback: log_callback("Labeling articles...")
 
         labeledArticles = assignLabels(articles, candidate_labels)
-        assignSubLabels(labeledArticles)
-
         csvFile_instance.writeLabeledDataArticles(input_csv_path, labeledArticles)
 
         if log_callback: log_callback("Labeling complete. Writing category counts...")
