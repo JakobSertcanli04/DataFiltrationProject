@@ -75,7 +75,6 @@ def fetch_articles(issn, start_year, end_year, output_path, log_callback=None):
         if log_callback: log_callback(f"Error: {e}")
         else: print(e)
 
-# === UI Thread Handlers ===
 def run_labeling(filepath, run_gemini, log_callback):
     def task():
         labelArticles(filepath, log_callback)
@@ -92,8 +91,32 @@ def run_fetch_articles(issn, start_year, end_year, output_path, log_callback):
     def task():
         fetch_articles(issn, start_year, end_year, output_path, log_callback)
     threading.Thread(target=task).start()
+def labelArticles(input_csv_path, custom_labels, log_callback=None):
+    try:
+        csvFile_instance = CsvFile()
+        articles = csvFile_instance.readData(input_csv_path)
 
+        if not custom_labels:
+            raise ValueError("No labels provided.")
+        
+        candidate_labels = custom_labels.split(",")  # Splitting by comma to allow multiple labels
+        
+        if log_callback: log_callback("Labeling articles...")
 
+        labeledArticles = assignLabels(articles, candidate_labels)
+        assignSubLabels(labeledArticles)
+
+        csvFile_instance.writeLabeledDataArticles(input_csv_path, labeledArticles)
+
+        if log_callback: log_callback("Labeling complete. Writing category counts...")
+        categoryCountDict = CategoryHandler.categoryCount(input_csv_path)
+        CategoryHandler.writeCategory(categoryCountDict)
+        if log_callback: log_callback("Done.")
+    except Exception as e:
+        if log_callback:
+            log_callback(f"Error: {e}")
+        else:
+            print(e)
 
 
 def create_ui():
@@ -119,13 +142,22 @@ def create_ui():
     gemini_check = tk.Checkbutton(file_frame, text="Run Gemini", variable=gemini_var)
     gemini_check.pack(side=tk.LEFT, padx=5)
 
-    start_labeling_btn = tk.Button(file_frame, text="Start Labeling", command=lambda: run_labeling(file_entry.get(), gemini_var.get(), log))
+    # === Custom Labels Input ===
+    tk.Label(file_frame, text="Enter Labels (comma-separated)").pack(side=tk.LEFT, padx=5)
+    labels_entry = tk.Entry(file_frame, width=50)
+    labels_entry.pack(side=tk.LEFT, padx=5)
+
+    # === Custom Topics for Gemini ===
+    tk.Label(file_frame, text="Enter Topics for Gemini (comma-separated)").pack(side=tk.LEFT, padx=5)
+    gemini_topics_entry = tk.Entry(file_frame, width=50)
+    gemini_topics_entry.pack(side=tk.LEFT, padx=5)
+
+    start_labeling_btn = tk.Button(file_frame, text="Start Labeling", command=lambda: run_labeling(file_entry.get(), gemini_var.get(), log, labels_entry.get(), gemini_topics_entry.get()))
     start_labeling_btn.pack(side=tk.LEFT, padx=5)
 
     wordcloud_btn = tk.Button(file_frame, text="Generate Word Cloud", command=lambda: run_wordcloud(file_entry.get(), log))
     wordcloud_btn.pack(side=tk.LEFT, padx=5)
 
-    # === Article Retrieval ===
     fetch_frame = tk.LabelFrame(window, text="Fetch Articles from Scopus", padx=10, pady=10)
     fetch_frame.pack(fill="x", padx=10, pady=5)
 
@@ -167,5 +199,23 @@ def create_ui():
 
     window.mainloop()
 
+
+def run_labeling(filepath, run_gemini, log_callback, custom_labels, custom_gemini_topics):
+    def task():
+        labelArticles(filepath, custom_labels, log_callback)
+        if run_gemini:
+            # Split the custom Gemini topics and pass them to the Gemini classification
+            topics = custom_gemini_topics.split(",") if custom_gemini_topics else []
+            log_callback("Running Gemini classification...")
+            geminiClassify(filepath, topics)
+            log_callback("Gemini classification complete.")
+            categoryCountDict = CategoryHandler.categoryCount(filepath)
+            CategoryHandler.writeCategory(categoryCountDict)
+    threading.Thread(target=task).start()
+
+
 if __name__ == "__main__":
     create_ui()
+
+
+
