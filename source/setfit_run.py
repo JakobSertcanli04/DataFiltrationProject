@@ -25,7 +25,7 @@ def myFunc(e):
     return e['Label']
 
 def assignLabels(articles, candidate_labels, threshold=0.6):
-    model = SetFitModel.from_pretrained("C:/Users/sejaser1/Project_setfit/src/mpnet-base-v2")
+    model = SetFitModel.from_pretrained("sentence-transformers/all-mpnet-base-v2")
     abstracts = toAbstracts(articles)
     predictions = model.predict_proba(abstracts)
     labeled_articles = []
