@@ -70,4 +70,35 @@ It includes features for:
         The Scopus fetching feature requires API access or internal tools for data scraping (please follow Scopus T&Cs).
         Make sure the model path is valid and the directory structure supports it.
 
+## Manual
+
+        Run setfit_run.py
+
+        How to retrieve articles:
+        
+          Create a csv file, this is where all of the articles will be stored.
+          Find the isnn for the journal you want to retrieve.
+          Select the start year and end year.
+          Wait for the program to fetch all of the articles.
+          
+        How to categorize articles:
+          Select the csv file you have previously created.
+          *OPTIONAL* Fill the gemini classification box for more accurate classification.
+          Enter the labels, seperated by comma and no spaces, Example: Semiconductor,Battery,Printed Circuit Board,Electrical Waste,Water Refinement,Emission
+          The Citation Limit input box lets you specify a minimum number of citations an article must have to be included in the labeling process.
+          Press start labeling
+
+        Generate a word cloud:
+          Select the csv file you want to generate a word cloud from
+          Press Generate Word Cloud
+
+        Generate a graph:
+          
+
+          
+          
+        
+        
+        
+
        
