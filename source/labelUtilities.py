@@ -16,20 +16,17 @@ class CategoryHandler:
         pass
 
     @staticmethod    
-    def categoryCount(file, citationCount = 15):
-        timeSpan = utilities.timeArray()
-        with open(file, 'r', encoding='utf-8') as f:  
-            csv_reader = csv.reader(f, delimiter=";")
-            next(f)
-            for row in csv_reader:      
-                timeSpan.add(row, citationCount)
+    def categoryCount(articles, citationCount = 15):
+        timeSpan = utilities.timeArray()  
+        print(articles)
+        timeSpan.add_from_articles(articles, citationCount)
         return timeSpan
     
     @staticmethod   
-    def writeCategory(dictionaryArray):
-
-
-        with open('categorySortedByDateV.txt', 'w', encoding='utf-8') as file:
+    def writeCategory(dictionaryArray, file):
+        file += ".txt"
+        print("printing data to txt file")
+        with open(file, 'w', encoding='utf-8') as file:
             for dict in dictionaryArray:
                 json.dump(dict, file, ensure_ascii=False, indent=4)
         

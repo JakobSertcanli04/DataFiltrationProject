@@ -27,49 +27,60 @@ def getYear(articleDate):
 
 
 def yearsArray(firstYear, secondYear):
-    return [str(year) for year in range(firstYear + 1, secondYear + 1)]
+    years = []
+    years.append(firstYear)
+    while(firstYear < secondYear):
+        years.append(str(firstYear + 1))
+        firstYear+=1
 
+    return years
 
 class timeArray:
-    def __init__(self):
-        self.years = yearsArray(2015, 2025)  # ['2016', ..., '2025']
+    def __init__(self, start_year=2010, end_year=2025):
+        self.years = yearsArray(start_year, end_year)  # ['2016', ..., '2025']
         self.YEARS = len(self.years)
 
+        # Each year starts with Total and Uncertain only
         self.timeSpanList = []
         for _ in range(self.YEARS):
             self.timeSpanList.append({
-                "Semiconductors": 0,
-                "Printed Circuit Boards": 0,
-                "Electronic Waste": 0,
-                "Batteries": 0,
-                "Emissions": 0,
-                "Water Refinement": 0,
                 "Total": 0,
                 "Uncertain": 0
             })
 
-    def add(self, row, citationLimit):
-        
-        try:
-            if int(row[5]) < citationLimit:
-                return
-            year = getYear(row[3])
-            label = row[6]
-            year_str = str(year)
+    def add_from_articles(self, articles, citationLimit=10):
+        print(self.years)
+        for article in articles:
+            try:
+                print("her")
+                print(article)
+                if int(article["CitationCount"]) < citationLimit:
+                    continue
 
-            if year_str in self.years:
-                year_index = self.years.index(year_str)
-                if label in self.timeSpanList[year_index]:
-                    self.timeSpanList[year_index][label] += 1
-                    self.timeSpanList[year_index]["Total"] += 1
-                    
-            else:
-                print(f"Year {year} not in range")
-        except Exception as e:
-            print(f"Error processing row {row}: {e}")
+                year = getYear(article["Date"])
+                year_str = str(year)
+
+                if year_str in self.years:
+                    index = self.years.index(year_str)
+                    label = article["Label"]
+
+                    # Dynamically add the label if not present
+                    if label not in self.timeSpanList[index]:
+                        self.timeSpanList[index][label] = 0
+
+                    self.timeSpanList[index][label] += 1
+                    self.timeSpanList[index]["Total"] += 1
+                else:
+                    print(f"Year {year} not in range")
+
+            except Exception as e:
+                print(f"Error processing article: {e}")
+
 
     def __iter__(self):
         return iter(self.timeSpanList)
 
     def toJson(self):
-        return self.timeSpanList
+        import json
+        return json.dumps(self.timeSpanList, indent=4)
+

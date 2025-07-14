@@ -75,7 +75,10 @@ class ScopusData:
         ArticleList = []
         nrOfArticles = 0
         title = self.getTitle(id)        
-            
+        
+        seen_dois = set()   
+
+
         if title:  
             for year in years:    
 
@@ -124,7 +127,8 @@ class ScopusData:
                             if articleDOI is not None: 
                                 article = self.getArticle(articleDOI, articleCitationCount)
                                 
-                                if article is not None:
+                                if article is not None and article.DOI not in seen_dois:
+                                    seen_dois.add(article.DOI)
                                     print(article)
                                     ArticleList.append(article)
 

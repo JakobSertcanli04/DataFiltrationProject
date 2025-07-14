@@ -55,6 +55,9 @@ class CsvFile:
         
     def writeLabeledDataArticles(self, csvFileArticles, articleList):
             fieldnames = ['DOI', 'Title', 'Abstract', 'Date', 'Link', 'CitationCount', 'Label']
+
+
+
             with open(csvFileArticles, mode='w', newline='', encoding='utf-8') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_ALL, delimiter=';')
 

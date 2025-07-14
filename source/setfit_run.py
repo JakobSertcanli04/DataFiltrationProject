@@ -5,54 +5,56 @@ from setfit import SetFitModel
 from labelUtilities import CategoryHandler
 from entryUtilities import CsvFile
 import scopus_data
-from setfit_subcategory import assignSubLabels
 from gemini import geminiClassify
-
 from wordcloud_graph import run_wordcloud
-
-'''''
-The code provided is a Python script that creates a GUI application using the tkinter
-library for labeling articles and fetching articles from Scopus. The script includes functions for
-labeling articles based on their abstracts, assigning labels to articles, fetching articles from
-Scopus based on ISSN and year range, and running Gemini classification on the labeled articles.
-'''''
-
 
 def toAbstracts(articles):
     return [article["Abstract"] for article in articles]
 
 def myFunc(e):
     return e['Label']
+from transformers import pipeline
 
-def assignLabels(articles, candidate_labels, threshold=0.6):
-    model = SetFitModel.from_pretrained("sentence-transformers/all-mpnet-base-v2")
+def assignLabels(articles, candidate_labels, threshold=0.35):
+    classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli", device=0)
     abstracts = toAbstracts(articles)
-    predictions = model.predict_proba(abstracts)
     labeled_articles = []
 
-    for i, probs in enumerate(predictions):
-        max_prob = max(probs)
-        label_index = probs.tolist().index(max_prob)
-        if max_prob >= threshold:
-            articles[i]['Label'] = candidate_labels[label_index]
+    for i, abstract in enumerate(abstracts):
+        print(i)
+        print(candidate_labels)
+        result = classifier(abstract, candidate_labels)
+        scores = result['scores']
+        labels = result['labels']
+        max_score = scores[0]
+        best_label = labels[0]
+        print(scores)
+
+        if max_score >= threshold:
+            articles[i]['Label'] = best_label
+            print(best_label)
             labeled_articles.append(articles[i])
 
     labeled_articles.sort(key=myFunc)
     return labeled_articles
 
-def labelArticles(input_csv_path, log_callback=None):
+def labelArticles(input_csv_path, custom_labels, log_callback=None):
     try:
         csvFile_instance = CsvFile()
-        articles = csvFile_instance.readData(input_csv_path) 
-        candidate_labels = ['Printed Circuit Boards', 'Waste', 'Batteries', 'Semiconductors', 'Water Refinement', 'Emissions']
+        articles = csvFile_instance.readData(input_csv_path)
+
+        if not custom_labels:
+            raise ValueError("No labels provided.")
+        
+        candidate_labels = custom_labels.split(",")  # Comma-separated input
+        
         if log_callback: log_callback("Labeling articles...")
 
         labeledArticles = assignLabels(articles, candidate_labels)
         csvFile_instance.writeLabeledDataArticles(input_csv_path, labeledArticles)
-
-        if log_callback: log_callback("Labeling complete. Writing category counts...")
-        categoryCountDict = CategoryHandler.categoryCount(input_csv_path)
-        CategoryHandler.writeCategory(categoryCountDict)
+        categoryCountDict = CategoryHandler.categoryCount(articles)       
+        CategoryHandler.writeCategory(categoryCountDict, input_csv_path)
+        
         if log_callback: log_callback("Done.")
     except Exception as e:
         if log_callback:
@@ -73,60 +75,36 @@ def fetch_articles(issn, start_year, end_year, output_path, log_callback=None):
         if log_callback: log_callback(f"Error: {e}")
         else: print(e)
 
-def run_labeling(filepath, run_gemini, log_callback):
+def run_labeling(filepath, run_gemini, log_callback, custom_labels):
     def task():
-        labelArticles(filepath, log_callback)
+        labelArticles(filepath, custom_labels, log_callback)
         if run_gemini:
-            topics = ["Semiconductors", "Electronic Waste", "Emissions", "Printed Circuit Boards", "Batteries", "Water Refinement"]
+            topics = custom_labels.split(",") if custom_labels else []
             log_callback("Running Gemini classification...")
-            geminiClassify(filepath, topics)
+
+            
+            articles = geminiClassify(filepath, topics)
             log_callback("Gemini classification complete.")
-            categoryCountDict = CategoryHandler.categoryCount(filepath)
-            CategoryHandler.writeCategory(categoryCountDict)
+            categoryCountDict = CategoryHandler.categoryCount(articles)
+
+            
+            CategoryHandler.writeCategory(categoryCountDict, filepath)
     threading.Thread(target=task).start()
 
 def run_fetch_articles(issn, start_year, end_year, output_path, log_callback):
     def task():
         fetch_articles(issn, start_year, end_year, output_path, log_callback)
     threading.Thread(target=task).start()
-def labelArticles(input_csv_path, custom_labels, log_callback=None):
-    try:
-        csvFile_instance = CsvFile()
-        articles = csvFile_instance.readData(input_csv_path)
-
-        if not custom_labels:
-            raise ValueError("No labels provided.")
-        
-        candidate_labels = custom_labels.split(",")  # Splitting by comma to allow multiple labels
-        
-        if log_callback: log_callback("Labeling articles...")
-
-        labeledArticles = assignLabels(articles, candidate_labels)
-        assignSubLabels(labeledArticles)
-
-        csvFile_instance.writeLabeledDataArticles(input_csv_path, labeledArticles)
-
-        if log_callback: log_callback("Labeling complete. Writing category counts...")
-        categoryCountDict = CategoryHandler.categoryCount(input_csv_path)
-        CategoryHandler.writeCategory(categoryCountDict)
-        if log_callback: log_callback("Done.")
-    except Exception as e:
-        if log_callback:
-            log_callback(f"Error: {e}")
-        else:
-            print(e)
-
 
 def create_ui():
     window = tk.Tk()
     window.title("Article Labeling Tool")
-    window.geometry("650x600")
+    window.geometry("700x600")
 
     def log(msg):
         log_box.insert(tk.END, msg + "\n")
         log_box.see(tk.END)
 
-    # === File Selector ===
     file_frame = tk.LabelFrame(window, text="Label Existing CSV", padx=10, pady=10)
     file_frame.pack(fill="x", padx=10, pady=5)
 
@@ -140,22 +118,18 @@ def create_ui():
     gemini_check = tk.Checkbutton(file_frame, text="Run Gemini", variable=gemini_var)
     gemini_check.pack(side=tk.LEFT, padx=5)
 
-    # === Custom Labels Input ===
-    tk.Label(file_frame, text="Enter Labels (comma-separated)").pack(side=tk.LEFT, padx=5)
+    # Single input box for both Labels and Gemini Topics
+    tk.Label(file_frame, text="Enter Labels / Gemini Topics (comma-separated)").pack(side=tk.LEFT, padx=5)
     labels_entry = tk.Entry(file_frame, width=50)
     labels_entry.pack(side=tk.LEFT, padx=5)
 
-    # === Custom Topics for Gemini ===
-    tk.Label(file_frame, text="Enter Topics for Gemini (comma-separated)").pack(side=tk.LEFT, padx=5)
-    gemini_topics_entry = tk.Entry(file_frame, width=50)
-    gemini_topics_entry.pack(side=tk.LEFT, padx=5)
-
-    start_labeling_btn = tk.Button(file_frame, text="Start Labeling", command=lambda: run_labeling(file_entry.get(), gemini_var.get(), log, labels_entry.get(), gemini_topics_entry.get()))
+    start_labeling_btn = tk.Button(file_frame, text="Start Labeling", command=lambda: run_labeling(file_entry.get(), gemini_var.get(), log, labels_entry.get()))
     start_labeling_btn.pack(side=tk.LEFT, padx=5)
 
     wordcloud_btn = tk.Button(file_frame, text="Generate Word Cloud", command=lambda: run_wordcloud(file_entry.get(), log))
     wordcloud_btn.pack(side=tk.LEFT, padx=5)
 
+    # === Fetch Articles Frame ===
     fetch_frame = tk.LabelFrame(window, text="Fetch Articles from Scopus", padx=10, pady=10)
     fetch_frame.pack(fill="x", padx=10, pady=5)
 
@@ -192,28 +166,11 @@ def create_ui():
     ))
     fetch_btn.grid(row=2, column=0, columnspan=6, pady=5)
 
+    # === Log Output Box ===
     log_box = scrolledtext.ScrolledText(window, width=80, height=20)
     log_box.pack(padx=10, pady=10)
 
     window.mainloop()
 
-
-def run_labeling(filepath, run_gemini, log_callback, custom_labels, custom_gemini_topics):
-    def task():
-        labelArticles(filepath, custom_labels, log_callback)
-        if run_gemini:
-            # Split the custom Gemini topics and pass them to the Gemini classification
-            topics = custom_gemini_topics.split(",") if custom_gemini_topics else []
-            log_callback("Running Gemini classification...")
-            geminiClassify(filepath, topics)
-            log_callback("Gemini classification complete.")
-            categoryCountDict = CategoryHandler.categoryCount(filepath)
-            CategoryHandler.writeCategory(categoryCountDict)
-    threading.Thread(target=task).start()
-
-
 if __name__ == "__main__":
     create_ui()
-
-
-

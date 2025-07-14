@@ -10,9 +10,10 @@ def myFunc(e):
 
 def geminiClassify(input_csv_path, topics):
     
+   
     csvFile_instance = CsvFile()
     articles = csvFile_instance.readData(input_csv_path) 
-
+    articleList = []
     client = genai.Client(api_key="AIzaSyC8mhmqYSfMT1_X6TlT5WHZIJedhXubWvQ")
 
     for _, article in enumerate(articles):
@@ -23,12 +24,14 @@ def geminiClassify(input_csv_path, topics):
         )
         
        # print(article['Abstract'])
-       # print(response.text)
+        print(response.text)
         if response.text != "Undefined":    
             article['Label'] = response.text
-
+       
+        articleList.append(article)
         time.sleep(2.5) #The api only accept a certain amount of calls per minute..
     
     articles.sort(key=myFunc)
     csvFile_instance.writeLabeledDataArticles(input_csv_path, articles)
-
+    
+    return articleList
