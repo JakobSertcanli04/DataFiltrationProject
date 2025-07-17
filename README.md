@@ -22,6 +22,9 @@ It includes features for:
 
 - Fetch Articles from Scopus: Input ISSN and date range to auto-fetch data and save as CSV.       
 
+# Prerequisites
+  Python: https://www.python.org/downloads/ Can alternatively be installed from Microsoft store
+
 
 # Installation 
 
@@ -91,8 +94,14 @@ It includes features for:
         Generate a word cloud:
           Select the csv file you want to generate a word cloud from
           Press Generate Word Cloud
+          
 
         Generate a graph:
+          Open the graph.py file.
+          Insert the directory of the file you want to display a graph for.
+          Make sure that the file ends with .txt
+          Example: with open('filepath.txt', 'r') as f:
+          Run the program.
           
 
           
