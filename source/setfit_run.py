@@ -55,7 +55,7 @@ def labelArticles(input_csv_path, custom_labels, citation_threshold, log_callbac
         if not custom_labels:
             raise ValueError("No labels provided.")
         
-        candidate_labels = custom_labels.split(",")  # Comma-separated input
+        candidate_labels = custom_labels.split(",")  
         
         if log_callback: log_callback("Labeling articles...")
 
@@ -129,7 +129,6 @@ def create_ui():
         log_box.insert(tk.END, msg + "\n")
         log_box.see(tk.END)
 
-    # === Label Existing CSV Frame ===
     file_frame = tk.LabelFrame(window, text="Label Existing CSV", padx=10, pady=10)
     file_frame.pack(fill="x", padx=10, pady=5)
 
@@ -215,7 +214,6 @@ def create_ui():
     ))
     fetch_btn.grid(row=2, column=2, columnspan=4, pady=5)
 
-    # === Log Output Box ===
     log_box = scrolledtext.ScrolledText(window, width=90, height=20)
     log_box.pack(padx=10, pady=10)
 
