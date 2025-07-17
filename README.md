@@ -56,12 +56,10 @@ It includes features for:
         You can get your api key over here: https://dev.elsevier.com/apikey/manage
         Insert the api key into the apiKey field inside the ScopusData class which lays inside the scopus_data.py file
 
-        
-## Running the App
+## 6. Running the App
 
-   python main.py
-
-
+   Write this in the terminal: -m spacy download en_core_web_sm   
+   Then Run: python setfit_run.py
 
 ## 📣 Notes
 
