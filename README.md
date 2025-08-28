@@ -1,111 +1,96 @@
-# Article Labeling Tool with Scopus Integration and Gemini Classifier 
+# Article Classification Tool - Gemini Edition
 
 ## Project Overview
-This project is a Tkinter-based GUI application that helps researchers and data analysts to automatically label scientific articles using pretrained machine learning models to retrieve articles from Scopus based on ISSN and year range.
+This project is a Tkinter-based GUI application that helps researchers and data analysts to automatically classify scientific articles using Google's Gemini AI. It includes features for retrieving articles from Scopus and generating visualizations.
 
-It includes features for:
-- Auto-labeling articles based on their abstract content.
-- Gemini-based topic classification.
-- Article fetching from Scopus using ISSN and year range.
-- Word cloud visualization of the abstract data.
-- An interactive line chart showing category trends over time.
+### Key Features:
+- **Gemini AI Classification**: Advanced topic classification using Google's Gemini model
+- **Scopus Integration**: Fetch articles from Scopus using ISSN and year range
+- **Interactive Visualizations**: 
+  - Word cloud generation from article abstracts
+  - Interactive graphs showing article distribution over time
+  - Citation analysis dashboards
+- **Simplified Workflow**: Streamlined UI with fewer clicks for better user experience
 
-  
-## How It Works
-- Load an Article CSV: Provide a .csv file with article data.
+## Installation 
 
-- Label the Articles: Use SetFitModel to assign category labels.
+### 1. Clone the Repository
+```bash
+git clone https://github.com/JakobSertcanli04/DataFiltrationProject
+cd DataFiltrationProject
+```
 
-- (Optional) Run Gemini: Further classify using Gemini AI for fine-grained categorization.
+### 2. Create a Virtual Environment
+```bash
+python -m venv venv
+source venv/bin/activate   # On Windows: venv\Scripts\activate
+```
 
-- Visualize: Generate word clouds from abstracts.
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
 
-- Fetch Articles from Scopus: Input ISSN and date range to auto-fetch data and save as CSV.       
+### 4. Configure API Keys
+- **Scopus API**: Get your API key from [Elsevier Developer Portal](https://dev.elsevier.com/apikey/manage)
+- **Gemini API**: Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+- Update the API keys in the respective files:
+  - `source/scopus_data.py` - for Scopus API key
+  - `source/gemini.py` - for Gemini API key
 
-# Prerequisites
-  Python: https://www.python.org/downloads/ Can alternatively be installed from Microsoft store
+### 5. Download Required Models
+```bash
+python -m spacy download en_core_web_sm
+```
 
+## Usage
 
-# Installation 
+### Running the Application
+```bash
+python source/main.py
+```
 
-## 1. Clone the Repository
+### Workflow
 
-        git clone https://github.com/JakobSertcanli04/DataFiltrationProject
-        cd DataFiltrationProject
+#### 1. Fetch Articles from Scopus
+1. Enter the ISSN of the journal you want to retrieve
+2. Specify the start and end years
+3. Set a citation limit (optional)
+4. Choose where to save the CSV file
+5. Click "Fetch Articles"
 
-## 2. Create a Virtual Environment
-        
-        python -m venv venv
-        source venv/bin/activate   # On Windows: venv\Scripts\activate
+#### 2. Classify Articles with Gemini
+1. Select your CSV file using the browse button
+2. Enter topics for classification (comma-separated)
+   - Example: `Semiconductor,Battery,Printed Circuit Board,Electrical Waste,Water Refinement,Emission`
+3. Set minimum citation count (default: 10)
+4. Click "Run Gemini Classification"
 
-## 3. Install Dependencies
-        pip install -r requirements.txt
+#### 3. Generate Visualizations
+- **Word Cloud**: Click "Generate Word Cloud" to create a word cloud from article abstracts
+- **Graph**: Click "Generate Graph" to create an interactive chart showing article distribution over time
 
+## Input CSV Format
+Your input CSV must have the following column headers:
+- `DOI`
+- `Title` 
+- `Abstract`
+- `Date`
+- `Link`
+- `CitationCount`
+- `Label` (will be added after classification)
 
-## 4. Download Tensorflow 
-        pip install tensorflow
+## Notes
+- The Gemini classifier requires an internet connection
+- The Scopus fetching feature requires API access (follow Scopus Terms & Conditions)
+- Visualizations are saved as files and opened in your default browser
+- Word clouds are generated for articles with sufficient citations (default: 15+ citations)
 
+## Troubleshooting
+- Ensure all API keys are properly configured
+- Check that your CSV file has the required column headers
+- Make sure you have sufficient internet connectivity for Gemini API calls
+- For large datasets, processing may take some time - check the log output for progress
 
-## 5. Download the SetFit Model
-
-        Ensure you have the SetFitModel locally or download from HuggingFace if internet access is available. Update the model path in:
-        model = SetFitModel.from_pretrained("path_to_your_local_model")
-
-
-## 6. Get your api key
-        You can get your api key over here: https://dev.elsevier.com/apikey/manage
-        Insert the api key into the apiKey field inside the ScopusData class which lays inside the scopus_data.py file
-
-## 6. Running the App
-
-   Write this in the terminal: -m spacy download en_core_web_sm   
-   Then Run: python setfit_run.py
-
-## 📣 Notes
-
-
-        Your input .csv must have at least the following column headers:
-        DOI	Title	Abstract	Date	Link	CitationCount	Label
-   
-        The Gemini classifier assumes an internet or LLM backend—ensure this is configured.
-        The Scopus fetching feature requires API access or internal tools for data scraping (please follow Scopus T&Cs).
-        Make sure the model path is valid and the directory structure supports it.
-
-## Manual
-
-        Run setfit_run.py
-
-        How to retrieve articles:
-        
-          Create a csv file, this is where all of the articles will be stored.
-          Find the isnn for the journal you want to retrieve.
-          Select the start year and end year.
-          Wait for the program to fetch all of the articles.
-          
-        How to categorize articles:
-          Select the csv file you have previously created.
-          *OPTIONAL* Fill the gemini classification box for more accurate classification.
-          Enter the labels, seperated by comma and no spaces, Example: Semiconductor,Battery,Printed Circuit Board,Electrical Waste,Water Refinement,Emission
-          The Citation Limit input box lets you specify a minimum number of citations an article must have to be included in the labeling process.
-          Press start labeling
-
-        Generate a word cloud:
-          Select the csv file you want to generate a word cloud from
-          Press Generate Word Cloud
-          
-
-        Generate a graph:
-          Open the graph.py file.
-          Insert the directory of the file you want to display a graph for.
-          Make sure that the file ends with .txt
-          Example: with open('filepath.txt', 'r') as f:
-          Run the program.
-          
-
-          
-          
-        
-        
-        
 
        
