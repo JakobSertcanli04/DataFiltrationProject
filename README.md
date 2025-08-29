@@ -17,8 +17,6 @@ This project is a Tkinter-based GUI application that helps researchers and data 
 ### System Requirements
 - **Python**: Version 3.7 or higher
 - **Operating System**: Windows, macOS, or Linux
-- **Memory**: Minimum 4GB RAM (8GB recommended for large datasets)
-- **Storage**: At least 1GB free disk space
 - **Internet Connection**: Required for API calls to Scopus and Gemini
 
 ### Required Software
@@ -32,7 +30,9 @@ This project is a Tkinter-based GUI application that helps researchers and data 
 
 ## Installation 
 
-### 1. Clone the Repository
+### 1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
+###    Copy and paste these commands one by one:
+
 ```bash
 git clone https://github.com/JakobSertcanli04/DataFiltrationProject
 cd DataFiltrationProject
