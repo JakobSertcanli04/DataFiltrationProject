@@ -40,7 +40,6 @@ def run_wordcloud(filepath, log_callback, citation_threshold=15):
             plt.figure(figsize=(10, 8))
             plt.imshow(wordcloud, interpolation='bilinear')
             plt.axis("off")
-            plt.title("Word Cloud from Article Abstracts", fontsize=16, pad=20)
             plt.tight_layout()
             plt.show()
 

@@ -109,7 +109,7 @@ def generate_graph_from_csv(filepath, log_callback):
 
 def create_ui():
     window = tk.Tk()
-    window.title("Article Classification Tool - Gemini Edition")
+    window.title("Article Classification Tool")
     window.geometry("900x800")
     
     # Configure style

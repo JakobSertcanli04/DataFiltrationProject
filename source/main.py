@@ -26,7 +26,7 @@ class ArticleClassifierApp:
         
     def setup_window(self):
         """Configure the main window."""
-        self.window.title("Article Classification Tool - Gemini Edition")
+        self.window.title("Article Classification Tool")
         self.window.geometry("900x800")
         
         # Configure style
