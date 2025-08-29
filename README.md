@@ -1,4 +1,4 @@
-# Article Classification Tool - Gemini Edition
+# Article Classification Tool 
 
 ## Project Overview
 This project is a Tkinter-based GUI application that helps researchers and data analysts to automatically classify scientific articles using Google's Gemini AI. It includes features for retrieving articles from Scopus and generating visualizations.
