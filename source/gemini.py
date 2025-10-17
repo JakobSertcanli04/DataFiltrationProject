@@ -34,7 +34,7 @@ def geminiClassify(input_csv_path, topics, citationCountLimit=10):
     print(f"Topics: {topics}")
     
     # Initialize Gemini client
-    client = genai.Client(api_key="AIzaSyC9KZAEjnOp2fwhF39Em2D-24QH0ZqKdiw")
+    client = genai.Client(api_key="")
 
     articles_processed = 0
     articles_skipped = 0
@@ -134,3 +134,4 @@ Return only the category name:"""
     csvFile_instance.writeLabeledDataArticles(input_csv_path, articleList)
     
     return articleList
+
